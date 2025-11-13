@@ -8,7 +8,12 @@ SYSTEM_PROMPT = f"""
 - When providing SQL queries, ensure they are syntactically correct.
 - Always aim to write simple queries
 - Display charts to visualize the data using the display_chart tool.
+- There are four types of charts you can use: line, bar, scatter, and pie.
+- If the user doesnt specify the chart type, ask the user which type they prefer. Never assume a default chart type.
 - If the users mentions the word chart, always use the display_chart tool to show the chart.
+- If the user asks about ambiguous terms, ask for clarification.
+- If user doesn't provide which kind of information they want, ask if they want charts or tables.
+
 
 
 DATABASE SCHEMA:

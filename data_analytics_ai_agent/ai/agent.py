@@ -34,7 +34,7 @@ def agent(messages):
                 return get_data_df(tool_call_arguments["sql_query"])
             # add graph tool call handling here if needed
             elif tool_call.function.name == "display_chart":
-                return display_chart(tool_call_arguments["sql_query"])
+                return display_chart(tool_call_arguments["sql_query"], tool_call_arguments["chart_type"])
     else:
         # If there are no tool calls, return the response content
         return response.content

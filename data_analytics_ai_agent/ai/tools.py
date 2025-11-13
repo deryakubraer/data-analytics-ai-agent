@@ -5,6 +5,9 @@ import json
 import pandas as pd
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
+# add plotly for advanced charts if needed
+import plotly.express as px
+import hashlib
 
 
 load_dotenv()
@@ -48,9 +51,10 @@ TOOLS = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "sql_query": {"type": "string"}
+                    "sql_query": {"type": "string"},
+                    "chart_type": {"type": "string"}
                 },
-                "required": ["sql_query"]
+                "required": ["sql_query", "chart_type"]
             },
         },
     }
@@ -81,37 +85,56 @@ def get_data_df(sql_query):
 
 #  Define a graphic tool for displaying dataframes in Streamlit
 
-def display_chart(sql_query):
-    print("Displaying chart with query:", sql_query)
+def display_chart(sql_query: str, chart_type: str = "line") -> str:
+    print(f"Displaying {chart_type} chart with query:", sql_query)
     try:
 # Create SQL engine
         password = os.getenv("DB_PASSWORD")
         connection_string = 'mysql+pymysql://root:' + password + '@localhost/sakila'
         engine = create_engine(connection_string)
+        
         # Execute query and create dataframe
         with engine.connect() as connection:    
-            sql_query_obj = text(sql_query)
-            result = connection.execute(sql_query_obj)
-            columns = result.keys()
-            rows = result.fetchall()
-            df = pd.DataFrame(rows, columns=columns)
-            # Show the SQL query
-            expander = st.expander("Chart SQL Query")
-            expander.code(sql_query,language="sql")
-            # Check if dataframe has data
-            if df.empty:
-                st.warning("No data returned from query")
-                return "Query returned no data to chart."
-            # Show the chart
-            if len(df.columns) > 1:
-                chart_df = df.set_index(df.columns[0])
-                st.line_chart(chart_df)
-            else:
-                st.line_chart(df)
-        
-            return f"Successfully displayed a line chart with {len(df)} data points and {len(df.columns)} columns."
+            result = connection.execute(text(sql_query))
+            df = pd.DataFrame(result.fetchall(), columns=result.keys())
+            
+        # Show the SQL query
+        with st.expander("SQL Query"):
+            st.code(sql_query, language="sql")
 
+        if df.empty:
+            st.warning("No data returned from the query.")
+            return
+            
+
+         # --- Pick first column as X, second as Y ---
+        x_col = df.columns[0]
+        y_col = df.columns[1]
+
+         # --- Force X to categorical if not numeric/datetime ---
+        if not pd.api.types.is_numeric_dtype(df[x_col]) and not pd.api.types.is_datetime64_any_dtype(df[x_col]):
+            df[x_col] = df[x_col].astype(str)
+       
+        # --- Plot line chart ---
+        if chart_type == "line":
+            fig = px.line(df, x=x_col, y=y_col)
+        elif chart_type == "bar":
+            fig = px.bar(df, x=x_col, y=y_col)
+        elif chart_type == "scatter":
+            fig = px.scatter(df, x=x_col, y=y_col)
+        elif chart_type == "pie":
+            fig = px.pie(df, names=x_col, values=y_col)
+        else:
+            return f"Chart type '{chart_type}' is not supported."
+        
+        # Force X-axis to show all category names
+        fig.update_xaxes(type='category')
+        fig.update_layout(template="plotly_white", height=500)
+        st.plotly_chart(fig, use_container_width=True)
+
+        return "Chart displayed successfully."
+    
     except Exception as e:
-        st.error(f"Error creating chart: {str(e)}")
-        return f"Error creating chart: {str(e)}"
+        st.error(f"Error creating line chart: {e}")
+        return f"Error creating line chart: {e}"
 
