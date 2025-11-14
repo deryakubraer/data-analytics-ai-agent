@@ -1,4 +1,4 @@
-from ai.sakila_schema import SAKILA_SCHEMA
+from ai.schema import get_schema
 
 SYSTEM_PROMPT = f"""
 - You are a helpful assistant and an expert data analyst that can answer questions about the sakila database. 
@@ -13,9 +13,9 @@ SYSTEM_PROMPT = f"""
 - If the users mentions the word chart, always use the display_chart tool to show the chart.
 - If the user asks about ambiguous terms, ask for clarification.
 - If user doesn't provide which kind of information they want, ask if they want charts or tables.
-
+- After executing a tool, always provide a concise summary of the results to the user.
 
 
 DATABASE SCHEMA:
-{SAKILA_SCHEMA}
+{get_schema()}
 """

@@ -1,33 +1,93 @@
 ########################################################
-# This is a starter template to develop the Sakila Data AI Agent. Use the concepts learned in the Developer Guide to build the full application.
+# 1. Import the necessary libraries
 ########################################################
-
-from openai import OpenAI
 import streamlit as st
+from ai.agent import agent
+from ai.prompts import SYSTEM_PROMPT
 
-with st.sidebar:
-    openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
-    "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
-    "[View the source code](https://github.com/streamlit/llm-examples/blob/main/Chatbot.py)"
-    "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
+########################################################
+# 2. Set the page config
+########################################################
+st.set_page_config(
+    page_title="💬 Data Agent",
+    page_icon=":material/chat_bubble_outline:",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+)
 
-st.title("💬 Chatbot")
-st.caption("🚀 A Streamlit chatbot powered by OpenAI")
+# Title
+st.title("💬 Data Analytics AI Agent")
+
+########################################################
+# 3. Ensure session state keys exist
+########################################################
+if "connection_string" not in st.session_state:
+    st.session_state["connection_string"] = None
+
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+    st.session_state["messages"] = []
 
-for msg in st.session_state.messages:
-    st.chat_message(msg["role"]).write(msg["content"])
+########################################################
+# 4. Handle connection input
+########################################################
+if not st.session_state["connection_string"]:
+    st.write("👋 Welcome! Please enter your database connection string below to get started.")
 
-if prompt := st.chat_input():
-    if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.")
-        st.stop()
+    connection_input = st.text_area(
+        "Enter your MySQL connection string (e.g. `mysql+pymysql://user:password@host:port/database`)",
+        placeholder="mysql+pymysql://user:password@localhost:3306/db_name",
+    )
 
-    client = OpenAI(api_key=openai_api_key)
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.chat_message("user").write(prompt)
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
-    msg = response.choices[0].message.content
-    st.session_state.messages.append({"role": "assistant", "content": msg})
-    st.chat_message("assistant").write(msg)
+    if st.button("Connect"):
+        if connection_input.strip():
+            st.session_state["connection_string"] = connection_input.strip()
+            st.session_state["messages"] = [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "assistant", "content": "✅ Connection established! How can I help you with your data?"}
+            ]
+            st.success("Connection successful! Reloading interface...")
+            st.rerun()
+        else:
+            st.error("Please enter a valid connection string.")
+
+else:
+    ########################################################
+    # 5. Display current connection and chat interface
+    ########################################################
+    st.info(f"🔗 Connected to: `{st.session_state['connection_string']}`")
+
+    # Optional: Add a disconnect button
+    if st.button("🔌 Disconnect"):
+        st.session_state["connection_string"] = None
+        st.session_state["messages"] = []
+        st.rerun()
+
+    ########################################################
+    # 6. Display the conversation history
+    ########################################################
+    for msg in st.session_state["messages"][1:]:  # skip system prompt
+        st.chat_message(msg["role"]).write(msg["content"])
+
+    ########################################################
+    # 7. Send a new message
+    ########################################################
+    prompt = st.chat_input("Type your question about the data...")
+
+    if prompt:
+        # Add user message
+        st.session_state["messages"].append({"role": "user", "content": prompt})
+        st.chat_message("user").write(prompt)
+
+        # Get response from your agent
+        response = agent(st.session_state["messages"])
+
+        # Add assistant response
+        st.session_state["messages"].append({"role": "assistant", "content": response})
+        st.chat_message("assistant").write(response)
+
+
+
+
+
+
+
