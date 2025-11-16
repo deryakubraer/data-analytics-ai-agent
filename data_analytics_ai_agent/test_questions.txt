@@ -1,0 +1,239 @@
+✅ FULL TEST SUITE: 18 Questions to Test All Features
+
+Section 1: Basic Aggregation / Chart
+
+Question: “Give me the number of movies for each category.”
+
+Test:
+
+Maps “movies” → correct table dynamically
+
+Asks chart/table type politely
+
+Generates valid SQL
+
+Displays chart correctly
+
+Provides technical description + analytical insight
+
+Question: “Show total orders per product category.”
+
+Test:
+
+Dynamically finds tables/columns
+
+Asks chart/table type
+
+Generates correct SQL
+
+Displays chart with commentary + insight
+
+Section 2: Different Chart Types
+
+Question: “Show me total revenue per region as a chart.”
+
+Test:
+
+Asks chart type if not specified
+
+Correctly plots line, bar, scatter, or pie chart
+
+Includes concise commentary and insight
+
+Question: “Display monthly user registrations as a line chart.”
+
+Test:
+
+Identifies date column
+
+Aggregates data per month
+
+Displays chart correctly with commentary and insight
+
+Question: “Plot the top 10 products by sales in a pie chart.”
+
+Test:
+
+Correctly chooses chart type
+
+Labels categories on X-axis / values on Y-axis
+
+Provides technical description + insight
+
+Section 3: Table Output
+
+Question: “List the top 10 customers by purchase amount.”
+
+Test:
+
+Offers table option
+
+Generates valid SQL
+
+Displays table correctly
+
+Provides 1–2 sentence summary
+
+Question: “Show all users who signed up last month.”
+
+Test:
+
+Dynamically finds the correct date column
+
+Outputs table correctly
+
+Provides concise summary of results
+
+Section 4: Ambiguous Terms / Synonyms
+
+Question: “How many movies are in each genre?”
+
+Test:
+
+Maps “movies” → appropriate table
+
+Maps “genre” → related column
+
+Generates correct SQL
+
+Asks chart/table type if needed
+
+Provides commentary + insight
+
+Question: “Total orders per category.”
+
+Test:
+
+Resolves synonyms like “category” → correct schema column
+
+Generates SQL dynamically
+
+Asks chart/table type
+
+Provides commentary + insight
+
+Section 5: Trends Over Time
+
+Question: “Show monthly sales trends for the past year.”
+
+Test:
+
+Aggregates data by month dynamically
+
+Finds date/time column
+
+Plots line chart if chosen
+
+Includes technical description + trend summary
+
+Question: “Number of new users per week for the last 3 months.”
+
+Test:
+
+Correctly groups by week
+
+Displays chart or table
+
+Provides commentary + insight
+
+Section 6: Outliers / Anomalies
+
+Question: “Which products have unusually high returns?”
+
+Test:
+
+Identifies relevant tables/columns
+
+Generates SQL correctly
+
+Displays chart/table
+
+Commentary highlights anomalies or outliers
+
+Question: “Show customers with extreme purchase amounts.”
+
+Test:
+
+Detects outliers using aggregation
+
+Outputs chart/table
+
+Includes technical description + insight
+
+Section 7: Large Summary / Combined Metrics
+
+Question: “Show total revenue, total orders, and average order value per region.”
+
+Test:
+
+Dynamically selects relevant tables/columns
+
+Generates multi-metric SQL query
+
+Asks chart/table type
+
+Provides technical description + concise insights
+
+Question: “Show sales, returns, and net profit per product category.”
+
+Test:
+
+Aggregates multiple metrics correctly
+
+Displays chart/table
+
+Includes commentary and insight
+
+Section 8: User Clarification / Ambiguous Schema
+
+Question: “Show the top sellers.”
+
+Test:
+
+Agent identifies ambiguity (could be products, users, or categories)
+
+Asks clarifying question politely
+
+Generates SQL after clarification
+
+Provides commentary + insight
+
+Question: “Number of films per type.”
+
+Test:
+
+Maps “films” → film table dynamically
+
+Resolves “type” → correct schema column
+
+Generates SQL, asks chart/table type
+
+Provides technical description + insight
+
+Question: “Which regions have the highest activity?”
+
+Test:
+
+Maps “activity” → correct metric from schema
+
+Resolves region table/column
+
+Asks chart/table type if not specified
+
+Provides commentary + insight
+
+✅ This test suite covers:
+
+Schema-agnostic behavior
+
+Semantic mapping of synonyms
+
+Chart/table selection
+
+Dynamic SQL generation
+
+Technical description + analytical insights
+
+Trend analysis, outliers, and combined metrics
+
+User clarification for ambiguous terms

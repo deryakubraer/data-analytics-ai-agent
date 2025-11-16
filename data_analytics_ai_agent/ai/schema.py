@@ -2,11 +2,20 @@ from sqlalchemy import create_engine, inspect, text
 import streamlit as st
 
 
-def get_schema() -> str:
+def get_connection_string() -> str:
     if "connection_string" not in st.session_state or not st.session_state["connection_string"]:
+        return None
+    return st.session_state["connection_string"]
+
+def get_schema() -> str:
+    print("Getting database schema...")
+
+    connection_string = get_connection_string()
+
+    if not connection_string:
+        print("No connection string found in session state.")
         return "❌ No database connection string found. Please enter it in the app."
 
-    connection_string = st.session_state["connection_string"]
     print("Extracting schema from the database...")
 
     # Create the engine

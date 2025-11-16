@@ -34,7 +34,7 @@ if not st.session_state["connection_string"]:
     st.write("👋 Welcome! Please enter your database connection string below to get started.")
 
     connection_input = st.text_area(
-        "Enter your MySQL connection string (e.g. `mysql+pymysql://user:password@host:port/database`)",
+        "Enter your connection string (e.g. `mysql+pymysql://user:password@host:port/database`)",
         placeholder="mysql+pymysql://user:password@localhost:3306/db_name",
     )
 
@@ -42,7 +42,7 @@ if not st.session_state["connection_string"]:
         if connection_input.strip():
             st.session_state["connection_string"] = connection_input.strip()
             st.session_state["messages"] = [
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": SYSTEM_PROMPT()},
                 {"role": "assistant", "content": "✅ Connection established! How can I help you with your data?"}
             ]
             st.success("Connection successful! Reloading interface...")

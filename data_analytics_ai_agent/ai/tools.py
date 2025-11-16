@@ -1,33 +1,18 @@
-import os
-import uuid
+from ai.schema import get_connection_string
 import streamlit as st
-import json
 import pandas as pd
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 # add plotly for advanced charts if needed
 import plotly.express as px
-import hashlib
+
 
 
 load_dotenv()
 
 # Define the tools
 TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": "Get the weather in a given location",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {"type": "string"}
-                    },
-                    "required": ["location"]
-                },
-            },
-    },
+
     {
         "type": "function",
         "function": {
@@ -60,16 +45,15 @@ TOOLS = [
     }
 ]
 
-# Define the weather tool python function
-def get_weather(location):
-    # Here we simulate the weather function with hardcoded values, just for testing
-    return f"The weather in {location} is sunny and 22°C"
+
 
 # Define the get_data_df tool python function
 def get_data_df(sql_query):
     # Create SQL engine
-    password = os.getenv("DB_PASSWORD")
-    connection_string = 'mysql+pymysql://root:' + password + '@localhost/sakila'
+    connection_string = get_connection_string()
+    if not connection_string:
+        print("No connection string found in session state.")
+        return "❌ No database connection string found. Please enter it in the app."
     engine = create_engine(connection_string)
     # Execute query and create dataframe
     with engine.connect() as connection:    
@@ -89,8 +73,11 @@ def display_chart(sql_query: str, chart_type: str = "line") -> str:
     print(f"Displaying {chart_type} chart with query:", sql_query)
     try:
 # Create SQL engine
-        password = os.getenv("DB_PASSWORD")
-        connection_string = 'mysql+pymysql://root:' + password + '@localhost/sakila'
+        connection_string = get_connection_string()
+        if not connection_string:
+            print("No connection string found in session state.")
+            return "❌ No database connection string found. Please enter it in the app."
+        
         engine = create_engine(connection_string)
         
         # Execute query and create dataframe
