@@ -7,7 +7,7 @@ from ai.tools import TOOLS
 
 load_dotenv()
 
-def agent(messages):
+def call_ai(messages_ai):
 
     # Initialize the OpenAI client
     client = OpenAI()
@@ -16,7 +16,7 @@ def agent(messages):
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         tools=TOOLS, # here we pass the tools to the LLM
-        messages=messages,
+        messages=messages_ai,
     )
 
     # Get the response from the LLM
@@ -29,10 +29,17 @@ def agent(messages):
             # Get the tool call arguments
             tool_call_arguments = json.loads(tool_call.function.arguments)
             if tool_call.function.name == "get_data_df":
-                return get_data_df(tool_call_arguments["sql_query"])
+                stream_result = get_data_df(tool_call_arguments["sql_query"])
+                return {'ai':{ "role": "assistant", "content": 'Table displayed successfully.' },
+                        'streamlit': stream_result}
+            
             # add graph tool call handling here if needed
             elif tool_call.function.name == "display_chart":
-                return display_chart(tool_call_arguments["sql_query"], tool_call_arguments["chart_type"])
+                stream_result = display_chart(tool_call_arguments["sql_query"], tool_call_arguments["chart_type"])
+                return {'ai':{ "role": "assistant", "content": 'Chart displayed successfully.' },
+                        'streamlit': stream_result}
     else:
         # If there are no tool calls, return the response content
-        return response.content
+        return {'ai':{ "role": "assistant", "content": response.content },
+                'streamlit': {'role': "assistant", "content": {"type": "text", "text": response.content}}}
+    

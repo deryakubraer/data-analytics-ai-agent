@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 # add plotly for advanced charts if needed
 import plotly.express as px
+import matplotlib.pyplot as plt
 
 
 
@@ -48,6 +49,7 @@ TOOLS = [
 
 
 # Define the get_data_df tool python function
+
 def get_data_df(sql_query):
     # Create SQL engine
     connection_string = get_connection_string()
@@ -60,12 +62,15 @@ def get_data_df(sql_query):
         sql_query = text(sql_query)
         result = connection.execute(sql_query)
         df = pd.DataFrame(result.all())
-        # Show the SQL query
-        expander = st.expander("SQL Query")
-        expander.write(sql_query)
+        # # Show the SQL query
+        # expander = st.expander("SQL Query")
+        # expander.write(sql_query)
         # Show the dataframe
-        st.dataframe(df)
-    return "Found the data you were looking for."
+        # st.dataframe(df)
+        return {'role': 'assistant', 'content': {'type': 'dataframe', 'dataframe': df, 'sql_query': sql_query}}
+    
+
+
 
 #  Define a graphic tool for displaying dataframes in Streamlit
 
@@ -86,8 +91,8 @@ def display_chart(sql_query: str, chart_type: str = "line") -> str:
             df = pd.DataFrame(result.fetchall(), columns=result.keys())
             
         # Show the SQL query
-        with st.expander("SQL Query"):
-            st.code(sql_query, language="sql")
+        # with st.expander("SQL Query"):
+        #     st.code(sql_query, language="sql")
 
         if df.empty:
             st.warning("No data returned from the query.")
@@ -117,11 +122,10 @@ def display_chart(sql_query: str, chart_type: str = "line") -> str:
         # Force X-axis to show all category names
         fig.update_xaxes(type='category')
         fig.update_layout(template="plotly_white", height=500)
-        st.plotly_chart(fig, use_container_width=True)
+        # st.plotly_chart(fig, use_container_width=True)
 
-        return "Chart displayed successfully."
-    
+        # return "Chart displayed successfully."
+        return {'role': 'assistant', 'content': {'type': 'chart', 'chart': fig, 'sql_query': sql_query}}
     except Exception as e:
         st.error(f"Error creating line chart: {e}")
         return f"Error creating line chart: {e}"
-
