@@ -38,9 +38,10 @@ TOOLS = [
                 "type": "object",
                 "properties": {
                     "sql_query": {"type": "string"},
-                    "chart_type": {"type": "string"}
+                    "chart_type": {"type": "string"},
+                    'explanation': {'type': 'string'}
                 },
-                "required": ["sql_query", "chart_type"]
+                "required": ["sql_query", "chart_type", 'explanation']
             },
         },
     }
@@ -74,8 +75,9 @@ def get_data_df(sql_query):
 
 #  Define a graphic tool for displaying dataframes in Streamlit
 
-def display_chart(sql_query: str, chart_type: str = "line") -> str:
+def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "") -> str:
     print(f"Displaying {chart_type} chart with query:", sql_query)
+    print( "Explanation:", explanation)
     try:
 # Create SQL engine
         connection_string = get_connection_string()
@@ -125,7 +127,18 @@ def display_chart(sql_query: str, chart_type: str = "line") -> str:
         # st.plotly_chart(fig, use_container_width=True)
 
         # return "Chart displayed successfully."
-        return {'role': 'assistant', 'content': {'type': 'chart', 'chart': fig, 'sql_query': sql_query}}
+        return {'role': 'assistant', 'content': {'type': 'chart', 'chart': fig, 'sql_query': sql_query, 'explanation': explanation}}
     except Exception as e:
         st.error(f"Error creating line chart: {e}")
         return f"Error creating line chart: {e}"
+    
+    import plotly.graph_objects as go
+
+# --- AXIS GRAPH COLOR PALETTE ---
+# 1. Stardust Gold (Primary)
+# 2. Hologram Cyan (Secondary Contrast)
+# 3. Deep Orchid (Tertiary)
+# 4. Ember Orange (Tertiary)
+
+
+
