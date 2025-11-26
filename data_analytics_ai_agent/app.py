@@ -50,7 +50,7 @@ st.markdown("""
         color: #0B1026;
     }
     /* Titles */
-    h1 {
+    h1, h2 {
         font-weight: 300 !important;
         letter-spacing: 0.1rem !important;
     }
@@ -65,11 +65,49 @@ st.markdown("""
         letter-spacing: 0.1em;
         background: rgba(212, 175, 55, 0.1);
     }
+    
+    /* --- NATIVE TITLE STYLES (Kept for reference, but not used on landing) --- */
+    .centered-title > h1 {
+        color: #C0C0C0; /* Silver */
+        font-size: 36px;
+        font-weight: 300;
+        text-align: center;
+        margin-bottom: 0px !important;
+        padding-bottom: 0px !important;
+        line-height: 1.1;
+    }
+    .centered-caption > p {
+        color: #999999; /* Darker Gray */
+        font-size: 14px;
+        letter-spacing: 0.1em;
+        text-align: center;
+        margin-top: 0px !important;
+        padding-top: 0px !important;
+        margin-bottom: 30px !important;
+    }
+
+    /* --- ONBOARDING STYLES (Simplified) --- */
+    .onboarding-title-text {
+        color: #D4AF37; /* Gold */
+        font-size: 1.8em;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 100px;
+    }
+    .onboarding-intro-text {
+        color: #C0C0C0; /* Silver/Light Grey */
+        font-size: 1.05em;
+        text-align: center;
+        margin-bottom: 40px; /* Increased margin for space */
+        line-height: 1.6;
+    }
+
     </style>
 """, unsafe_allow_html=True)
 
 # --- HELPER: Style Charts (Multi-Color Palette) ---
 # AXIS GRAPH COLOR PALETTE: Gold, Cyan, Orchid, Orange, Silver
+
 import plotly.graph_objects as go
 
 # --- AXIS GRAPH COLOR PALETTE ---
@@ -104,23 +142,26 @@ def style_chart(fig):
             elif trace.type == 'bar':
                 # Bar charts use the singular 'color' property on the trace, 
                 # often initialized to the trace itself.
-                trace.marker.color = color
+                if 'marker' in trace and 'color' in trace.marker:
+                    # If px did not assign a color, we assign one from the palette
+                    if not isinstance(trace.marker.color, list) and not trace.marker.color.startswith('rgb'):
+                         trace.marker.color = color
                 
             elif trace.type == 'scatter':
                 # Scatter (line) charts use the singular 'color' property
-                trace.line.color = color
-                trace.marker.color = color
+                if 'line' in trace:
+                    trace.line.color = color
+                if 'marker' in trace:
+                    trace.marker.color = color
             # --- END CORRECTED LOGIC ---
 
     return fig
 
 
-# Branding Header
-st.markdown("<h1 style='text-align: center; margin-bottom: 30px;'>A X I S</h1>", unsafe_allow_html=True)
-
 ########################################################
 # 3. Ensure session state keys exist
 ########################################################
+
 if "connection_string" not in st.session_state:
     st.session_state["connection_string"] = None
 
@@ -135,13 +176,29 @@ if "messages_streamlit" not in st.session_state:
 ########################################################
 # 4. Handle connection input
 ########################################################
+
 if not st.session_state["connection_string"]:
     
-    # Persona Greeting
-    st.markdown("<div style='text-align: center; margin-bottom: 20px; font-size: 1.1em;'>Hello. I am Axis. Please connect your database so I can assist you.</div>", unsafe_allow_html=True)
+    # --- ONBOARDING CONTENT START (Minimalist) ---
+    col1, col2, col3 = st.columns([1, 4, 1])
 
-    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
+        
+        # Title and Main Purpose (No logo, simple welcome text)
+        st.markdown('<p class="onboarding-title-text" style="margin-top: 100px;">Welcome! I am your intelligent data agent.</p>', unsafe_allow_html=True)
+        st.markdown("""
+        <p class="onboarding-intro-text">
+        I provide **real-time, accelerated business intelligence**. Ask your data questions in natural language, and I will instantly deliver visualized answers.
+        </p>
+        """, unsafe_allow_html=True)
+
+        # Connection Input Area
+        st.markdown('<div style="margin-top: 40px; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;"></div>', unsafe_allow_html=True)
+        
+        # Connection Key Label
+        st.markdown('<p style="text-align: center; color: #EAEAEA; font-size: 1em; margin-bottom: 10px;">To begin, please enter your database connection key:</p>', unsafe_allow_html=True)
+
+
         # SECURITY CHANGE: Using st.text_input with type='password' to mask input
         connection_input = st.text_input(
             "Connection Key",
@@ -155,7 +212,7 @@ if not st.session_state["connection_string"]:
                 st.session_state["connection_string"] = connection_input.strip()
                 
                 # AXIS INITIAL GREETING (Genius Assistant Persona)
-                initial_msg = "I am connected to the database. How can I help you today?"
+                initial_msg = "I am connected to the database. How can I help you today? Try asking: 'Show me the total revenue by region for last quarter.'"
                 
                 st.session_state["messages_ai"] = [
                     {"role": "system", "content": SYSTEM_PROMPT()},
@@ -168,6 +225,8 @@ if not st.session_state["connection_string"]:
                 st.rerun()
             else:
                 st.error("Please enter a valid connection string.")
+    
+    # --- ONBOARDING CONTENT END ---
 
 else:
     ########################################################

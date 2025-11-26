@@ -75,70 +75,68 @@ def get_data_df(sql_query):
 
 #  Define a graphic tool for displaying dataframes in Streamlit
 
-def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "") -> str:
-    print(f"Displaying {chart_type} chart with query:", sql_query)
-    print( "Explanation:", explanation)
+def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "") -> dict:
+    import pandas as pd
+    import plotly.express as px
+    from sqlalchemy import create_engine, text
+    from ai.schema import get_connection_string
+
     try:
-# Create SQL engine
         connection_string = get_connection_string()
         if not connection_string:
-            print("No connection string found in session state.")
-            return "❌ No database connection string found. Please enter it in the app."
-        
+            return {
+                'role': 'assistant',
+                'content': {'type': 'text', 'text': "❌ No database connection string found. Please enter it in the app."}
+            }
+
         engine = create_engine(connection_string)
-        
-        # Execute query and create dataframe
-        with engine.connect() as connection:    
+        with engine.connect() as connection:
             result = connection.execute(text(sql_query))
             df = pd.DataFrame(result.fetchall(), columns=result.keys())
-            
-        # Show the SQL query
-        # with st.expander("SQL Query"):
-        #     st.code(sql_query, language="sql")
 
         if df.empty:
-            st.warning("No data returned from the query.")
-            return
-            
+            return {
+                'role': 'assistant',
+                'content': {'type': 'text', 'text': "⚠️ Query returned no results."}
+            }
 
-         # --- Pick first column as X, second as Y ---
-        x_col = df.columns[0]
-        y_col = df.columns[1]
+        x_col = df.columns[1]  # Month
+        y_col = df.columns[2]  # Total payment
+        color_col = df.columns[0]  # Category
 
-         # --- Force X to categorical if not numeric/datetime ---
+        # Ensure X is categorical
         if not pd.api.types.is_numeric_dtype(df[x_col]) and not pd.api.types.is_datetime64_any_dtype(df[x_col]):
             df[x_col] = df[x_col].astype(str)
-       
-        # --- Plot line chart ---
+
         if chart_type == "line":
-            fig = px.line(df, x=x_col, y=y_col)
+            fig = px.line(df, x=x_col, y=y_col, color=color_col)
         elif chart_type == "bar":
-            fig = px.bar(df, x=x_col, y=y_col)
+            fig = px.bar(df, x=x_col, y=y_col, color=color_col, barmode="group")
         elif chart_type == "scatter":
-            fig = px.scatter(df, x=x_col, y=y_col)
+            fig = px.scatter(df, x=x_col, y=y_col, color=color_col)
         elif chart_type == "pie":
-            fig = px.pie(df, names=x_col, values=y_col)
+            fig = px.pie(df, names=color_col, values=y_col)
         else:
-            return f"Chart type '{chart_type}' is not supported."
-        
-        # Force X-axis to show all category names
+            return {
+                'role': 'assistant',
+                'content': {'type': 'text', 'text': f"❌ Chart type '{chart_type}' is not supported."}
+            }
+
         fig.update_xaxes(type='category')
         fig.update_layout(template="plotly_white", height=500)
-        # st.plotly_chart(fig, use_container_width=True)
 
-        # return "Chart displayed successfully."
-        return {'role': 'assistant', 'content': {'type': 'chart', 'chart': fig, 'sql_query': sql_query, 'explanation': explanation}}
+        return {
+            'role': 'assistant',
+            'content': {
+                'type': 'chart',
+                'chart': fig,
+                'sql_query': sql_query,
+                'explanation': explanation
+            }
+        }
+
     except Exception as e:
-        st.error(f"Error creating line chart: {e}")
-        return f"Error creating line chart: {e}"
-    
-    import plotly.graph_objects as go
-
-# --- AXIS GRAPH COLOR PALETTE ---
-# 1. Stardust Gold (Primary)
-# 2. Hologram Cyan (Secondary Contrast)
-# 3. Deep Orchid (Tertiary)
-# 4. Ember Orange (Tertiary)
-
-
-
+        return {
+            'role': 'assistant',
+            'content': {'type': 'text', 'text': f"❌ Error creating chart: {e}"}
+        }
