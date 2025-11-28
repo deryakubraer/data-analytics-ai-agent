@@ -1,101 +1,88 @@
-# 🤖 Sakila Data AI Agent 📊
+# AXIS | Data Intelligence 💠
 
-A powerful AI-powered chatbot that helps you analyze and query the Sakila database (a sample MySQL database representing a DVD rental store) using natural language. Built with OpenAI's GPT models, Python, and Streamlit.
+## About The Project
 
-## 🌟 Features
+**AXIS** is an **intelligent data agent panel** designed to provide **real-time, accelerated business intelligence** [1].
 
-- Natural language querying of the Sakila database
-- Interactive chat interface built with Streamlit
-- Powered by OpenAI's GPT models
-- SQL query generation from natural language questions
-- Comprehensive database schema understanding
+The application allows users to ask complex data questions using natural language [1, 2]. The system, which operates as a "senior data analyst" [2], instantly processes these queries and delivers visualized answers, either as charts or tables [1, 3].
 
-## 🛠️ Prerequisites
+AXIS automatically handles database connectivity, SQL generation, and visualization, following a strict set of rules to ensure safe query execution [3, 4].
 
-- Python 3.x
-- MySQL with Sakila database installed
-- OpenAI API key
-- Required Python packages (see Installation section)
+### Key Features
 
-## 📦 Fork, Clone, Install, Add environment variables and Run
+*   **Intelligent Agent:** Uses advanced AI (GPT models) for tool calling to execute data tasks [5].
+*   **Database Analysis:** Detects the SQL dialect (e.g., PostgreSQL, MySQL) and analyzes the database schema to ensure accurate query generation [2, 6].
+*   **Visualizations:** Supports displaying results as tables (DataFrames) [7] or various chart types (line, bar, scatter, pie) using Plotly [7, 8]. Charts are styled using a specialized color palette (Gold, Cyan, Orchid, Orange, Silver) [9, 10].
+*   **Secure Connection:** Requires a database connection key, which is handled securely using a password input type [11].
+*   **Structured Feedback:** Provides concise technical summaries and explanations after generating charts [12, 13].
 
-1. Fork, Clone the repository:
-```bash
-git clone https://github.com/yourusername/sakila-data-ai-agent.git
-cd sakila-data-ai-agent
-```
+### Built With
 
-2. Install required packages:
-```bash
-pip install openai streamlit pymysql sqlalchemy python-dotenv
-```
+This project relies on a modern data and AI stack:
 
-3. Set up your environment variables:
-   - Copy `.env.sample` to `.env`
-   - Add your OpenAI API key and database credentials to `.env`:
-```
-OPENAI_API_KEY=your_api_key_here
-DB_PASSWORD=your_database_password
-```
+*   **Python** (Base language)
+*   **Anaconda** (Environment management)
+*   **Streamlit** (Web application framework) [14]
+*   **OpenAI** (LLM integration via client and API calls) [5, 14]
+*   **Plotly** (Advanced chart generation) [14, 15]
+*   **SQLAlchemy** (Database connection and SQL execution) [15]
+*   **Pandas** (Data manipulation and DataFrame handling) [15]
 
-## 🚀 Usage
+---
 
-1. Start the Streamlit app:
-```bash
-streamlit run app.py
-```
+# Getting Started
 
-2. Open your web browser and navigate to the provided local URL
-3. Start chatting with the AI agent about the Sakila database!
+To run AXIS, you must first ensure you have the necessary Python environment set up and the required dependencies installed.
 
-## 💡 Example Queries
+### Prerequisites
 
-You can ask questions like:
-- "How many movies are in the database?"
-- "What are the most rented movies?"
-- "Show me the top 10 customers by rental count"
-- "What's the average rental duration?"
+You need access to an OpenAI API key and a valid database connection string [11].
 
-## 🗄️ Project Structure
+### Installation
 
-- `app.py`: Empty application file that you'll develop following the Developer Guide
-- `app_solution.py`: Complete implementation of the Streamlit application (reference solution)
-- `agent/`: Directory containing agent-related modules
-  - `agent.py`: Core agent implementation
-  - `tools.py`: Database querying tools
-  - `prompts.py`: System prompts
-  - `sakila_schema.py`: Database schema information
-- `Developer_Guide.ipynb`: Step-by-step Jupyter notebook that teaches you how to build the application
-- `.env.sample`: Sample environment variables file
+Follow these steps to set up your project locally:
 
-## 🔧 Technical Details
+1.  **Clone the repository.**
+    ```bash
+    git clone https://github.com/deryakubraer/data-analytics-ai-agent.git
+    
+    cd data-analytics-ai-agent
+    ```
 
-The project combines several key technologies:
-- OpenAI API for natural language understanding and SQL generation
-- Streamlit for the web interface
-- SQLAlchemy for database interactions
-- MySQL (Sakila database) for data storage
+2.  **Install Python dependencies** using the provided `requirements.txt` file (assuming standard installation practice, as complex libraries like SQLAlchemy and Plotly are used [14, 15]).
+    ```bash
+    pip install -r requirements.txt
+    ```
+ 
 
-The agent uses a sophisticated system prompt that includes the complete Sakila database schema, allowing it to generate accurate SQL queries based on natural language questions.
+3.  **Run the Streamlit application.**
+    ```bash
+    streamlit run app.py
+    ```
+    *(The main page configuration sets the app title to "AXIS | Data Intelligence" and uses a wide layout with a collapsed sidebar initially [9, 14]. The application file typically starts by importing `streamlit` and setting the page configuration [14].)*
 
-## 📚 Learning and Development
+4.  **Connect to your Database.**
+    Upon launch, the application will prompt you to enter your database connection string (e.g., `mysql+pymysql://user:password@localhost:3306/db_name`) to establish the connection [1, 11].
 
-This repository is designed as a learning resource. Here's how to use it:
+## Usage
+GIF
 
-1. Start with `Developer_Guide.ipynb` - This comprehensive Jupyter notebook walks you through all the concepts needed to build the AI agent:
-   - Setting up the OpenAI API
-   - Understanding system prompts
-   - Implementing tool calls
-   - Building the database querying functionality
-   - Developing the Streamlit interface
+## Roadmap
+[Notion linki]
+*(This is a placeholder for your detailed roadmap link.)*
 
-2. Development Process:
-   - The `app.py` file is intentionally empty - you'll build it step by step following the Developer Guide
-   - Reference `app_solution.py` only after attempting to build the application yourself
-   - The Guide teaches you all the concepts necessary to create a functional AI agent that can query databases using natural language
+## License
+MIT
 
-The goal is to help you understand how to build an AI-powered data querying agent from scratch, with practical, hands-on experience.
+## Contact
+For questions and comments please contact me via [my Linkedin profile](https://www.linkedin.com/in/deryakubraer).
 
-## 📝 License
+## Acknowlegments:
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project, AXIS, wouldn't have been possible without some key people and my fur babies.
+
+First, I want to give a massive thank you to my dear teacher, Nicolas Mirabet. He is absolutely excellent at his job. He listened, understood, gave me the necessary nudge when I needed it, and always showed me the right path. He is a visionary, incredibly patient, and it’s clear he genuinely loves what he does, which is why he’s so successful. Thank you for making the educational contents slightly less terrifying. And yeah, it is always a tuple. 
+
+Second, a huge thank you to my husband, Can Hosgor, for his support and compassion. He not only encouraged me to attend the bootcamp but also believed in me every step of the way. He was the rock who supported me through all the late nights and wiped away my tears when those impossible error messages felt like personal attacks. I hope he feels incredibly proud when he sees what we built with AXIS!
+
+Finally, my deepest appreciation goes to my lovely cats Sütlaç and Pesto. While their main form of "compassion" involved demanding food, walking across my keyboard at critical moments, and silently judging me, their presence made the long hours bearable. Without them, the world is just... meeh.

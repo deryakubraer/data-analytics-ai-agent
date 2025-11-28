@@ -93,6 +93,10 @@ def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "
         with engine.connect() as connection:
             result = connection.execute(text(sql_query))
             df = pd.DataFrame(result.fetchall(), columns=result.keys())
+        print("DataFrame for chart:", df.head())
+        print("Chart type:", chart_type)
+        print("Explanation:", explanation)
+        print("SQL Query:", sql_query)
 
         if df.empty:
             return {
@@ -100,13 +104,37 @@ def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "
                 'content': {'type': 'text', 'text': "⚠️ Query returned no results."}
             }
 
-        x_col = df.columns[1]  # Month
-        y_col = df.columns[2]  # Total payment
-        color_col = df.columns[0]  # Category
 
-        # Ensure X is categorical
+        # ----------------------
+        # 1. Select X column (always first)
+        # ----------------------
+        x_col = df.columns[0]
+
+
+        # Convert to string if not numeric/datetime
         if not pd.api.types.is_numeric_dtype(df[x_col]) and not pd.api.types.is_datetime64_any_dtype(df[x_col]):
             df[x_col] = df[x_col].astype(str)
+
+
+
+        # ----------------------
+        # 2. Select Y column
+        #    Prefer first numeric column after X
+        # ----------------------
+        y_col = None
+        for col in df.columns[1:]:
+            if pd.api.types.is_numeric_dtype(df[col]):
+                y_col = col
+                break
+
+        # If no numeric column found, use column 1
+        if y_col is None:
+            y_col = df.columns[1]
+
+        # ----------------------
+        # 3. Select color column (only if exists)
+        # ----------------------
+        color_col = df.columns[2] if len(df.columns) > 2 else None
 
         if chart_type == "line":
             fig = px.line(df, x=x_col, y=y_col, color=color_col)
@@ -123,7 +151,7 @@ def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "
             }
 
         fig.update_xaxes(type='category')
-        fig.update_layout(template="plotly_white", height=500)
+        fig.update_layout(template="simple_white", height=500)
 
         return {
             'role': 'assistant',
