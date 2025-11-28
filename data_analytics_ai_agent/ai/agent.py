@@ -35,7 +35,12 @@ def call_ai(messages_ai):
             
             # add graph tool call handling here if needed
             elif tool_call.function.name == "display_chart":
-                stream_result = display_chart(tool_call_arguments["sql_query"], tool_call_arguments["chart_type"], tool_call_arguments['explanation'])
+                stream_result = display_chart(tool_call_arguments["sql_query"], 
+                                              tool_call_arguments["chart_type"],
+                                              tool_call_arguments['explanation'],
+                                              tool_call_arguments['x'],
+                                              tool_call_arguments['y'],
+                                              tool_call_arguments['color'])
                 return {'ai':{ "role": "assistant", "content": 'Chart displayed successfully.' },
                         'streamlit': stream_result}
     else:

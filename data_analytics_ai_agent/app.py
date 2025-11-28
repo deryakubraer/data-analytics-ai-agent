@@ -295,10 +295,10 @@ else:
 
     if st.session_state["mode"] == 1 :  # Dashboard Mode
         st.markdown("## 📊 Dashboard Mode")
-        st.markdown("In Dashboard mode, Axis provides visual summaries and insights from your data.")
         # Here you can add predefined dashboard elements or allow the user to request specific charts.
-        st.markdown("*(Dashboard functionality to be implemented...)*")
-
+        left_col, right_col = st.columns(2)
+        number = 0
+        
         for msg in st.session_state["messages_streamlit"]:
             # Avatar: Axis (💠) vs User (None)
             avatar = "💠" if msg["role"] == "assistant" else None
@@ -306,12 +306,21 @@ else:
             if msg.get("role") == "assistant":
                 content = msg.get("content", {})
                 if content.get("type") == "chart":
-                    
-                    with st.expander("View Query Logic"):
-                        st.code(content["sql_query"], language="sql")
-                    # Styling the chart on the fly
-                    styled_fig = style_chart(content["chart"])
-                    st.plotly_chart(styled_fig, use_container_width=True)
+                    if number % 2 == 0:
+                        with left_col:
+                            with st.expander("View Query Logic"):
+                                st.code(content["sql_query"], language="sql")
+                            # Styling the chart on the fly
+                            styled_fig = style_chart(content["chart"])
+                            st.plotly_chart(styled_fig, use_container_width=True)
+                    else:
+                        with right_col:
+                            with st.expander("View Query Logic"):
+                                st.code(content["sql_query"], language="sql")
+                            # Styling the chart on the fly
+                            styled_fig = style_chart(content["chart"])
+                            st.plotly_chart(styled_fig, use_container_width=True)
+                    number += 1
                 
             
     else:  # Conversation Mode

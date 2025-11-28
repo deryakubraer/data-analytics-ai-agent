@@ -33,15 +33,22 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "display_chart",
-            "description": "Display a pandas charts in the Streamlit app",
+            "description": """Display a plotly chart. Supported chart types are line, bar, scatter, and pie. 
+            Always provide a concise technical explanation of the chart generated.
+            State which columns should be used for X and Y axes, and color.
+            Color can be an empty string if not applicable.
+            """,
             "parameters": {
                 "type": "object",
                 "properties": {
                     "sql_query": {"type": "string"},
                     "chart_type": {"type": "string"},
-                    'explanation': {'type': 'string'}
+                    "explanation": {"type": "string"},
+                    "x": {"type": "string"},
+                    "y": {"type": "string"},
+                    "color": {"type": "string"}
                 },
-                "required": ["sql_query", "chart_type", 'explanation']
+                "required": ["sql_query", "chart_type", "explanation", "x", "y", "color"]
             },
         },
     }
@@ -75,7 +82,7 @@ def get_data_df(sql_query):
 
 #  Define a graphic tool for displaying dataframes in Streamlit
 
-def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "") -> dict:
+def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "", x_col: str = None, y_col: str = None, color_col: str = None) -> dict:
     import pandas as pd
     import plotly.express as px
     from sqlalchemy import create_engine, text
@@ -93,10 +100,15 @@ def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "
         with engine.connect() as connection:
             result = connection.execute(text(sql_query))
             df = pd.DataFrame(result.fetchall(), columns=result.keys())
-        print("DataFrame for chart:", df.head())
+        
+        print("DataFrame for chart:")
+        print(df.head())
         print("Chart type:", chart_type)
         print("Explanation:", explanation)
         print("SQL Query:", sql_query)
+        print("X column:", x_col)
+        print("Y column:", y_col)
+        print("Color column:", color_col)
 
         if df.empty:
             return {
@@ -108,33 +120,37 @@ def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "
         # ----------------------
         # 1. Select X column (always first)
         # ----------------------
-        x_col = df.columns[0]
-
+        if x_col == '' or x_col is None: 
+            x_col = df.columns[0]
 
         # Convert to string if not numeric/datetime
         if not pd.api.types.is_numeric_dtype(df[x_col]) and not pd.api.types.is_datetime64_any_dtype(df[x_col]):
             df[x_col] = df[x_col].astype(str)
 
 
-
         # ----------------------
         # 2. Select Y column
         #    Prefer first numeric column after X
         # ----------------------
-        y_col = None
-        for col in df.columns[1:]:
-            if pd.api.types.is_numeric_dtype(df[col]):
-                y_col = col
-                break
-
-        # If no numeric column found, use column 1
-        if y_col is None:
-            y_col = df.columns[1]
+        if not y_col or y_col == '':
+            
+            for col in df.columns[1:]:
+                if pd.api.types.is_numeric_dtype(df[col]):
+                    y_col = col
+                    break
+            # If no numeric column found, use column 1
+            if y_col is None:
+                y_col = df.columns[1]
 
         # ----------------------
         # 3. Select color column (only if exists)
         # ----------------------
-        color_col = df.columns[2] if len(df.columns) > 2 else None
+        if color_col == '' or color_col is None:
+            if len(df.columns) > 2:
+                color_col = df.columns[2]
+            else:
+                color_col = None  
+ 
 
         if chart_type == "line":
             fig = px.line(df, x=x_col, y=y_col, color=color_col)
@@ -164,6 +180,7 @@ def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "
         }
 
     except Exception as e:
+        print("Error creating chart:", e)
         return {
             'role': 'assistant',
             'content': {'type': 'text', 'text': f"❌ Error creating chart: {e}"}
