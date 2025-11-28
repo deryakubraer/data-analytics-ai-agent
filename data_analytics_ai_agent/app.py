@@ -172,32 +172,31 @@ if "messages_ai" not in st.session_state:
     st.session_state["messages_ai"] = []
 if "messages_streamlit" not in st.session_state:
     st.session_state["messages_streamlit"] = []
+    
+# --- ONBOARDING CONTENT START (Minimalist) ---
+col1, col2, col3 = st.columns([1, 4, 1])
+
+with col2:
+    
+    # Title and Main Purpose (No logo, simple welcome text)
+    st.markdown('<p class="onboarding-title-text" style="margin-top: 100px;">Welcome! I am AXIS, your intelligent data agent.</p>', unsafe_allow_html=True)
+    st.markdown("""
+    <p class="onboarding-intro-text">
+    Ask your data questions in natural language and get instant answers. Let's unlock insights from your database together!
+    </p>
+    """, unsafe_allow_html=True)
+
 
 ########################################################
 # 4. Handle connection input
 ########################################################
-
 if not st.session_state["connection_string"]:
-    
-    # --- ONBOARDING CONTENT START (Minimalist) ---
-    col1, col2, col3 = st.columns([1, 4, 1])
-
     with col2:
-        
-        # Title and Main Purpose (No logo, simple welcome text)
-        st.markdown('<p class="onboarding-title-text" style="margin-top: 100px;">Welcome! I am Axis, your intelligent data agent.</p>', unsafe_allow_html=True)
-        st.markdown("""
-        <p class="onboarding-intro-text">
-        Ask your data questions in natural language and get instant answers. Let's unlock insights from your database together!
-        </p>
-        """, unsafe_allow_html=True)
-
         # Connection Input Area
         st.markdown('<div style="margin-top: 40px; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;"></div>', unsafe_allow_html=True)
         
         # Connection Key Label
         st.markdown('<p class="onboarding-intro-text"> To begin, please enter your database connection string:</p>', unsafe_allow_html=True)
-
 
         # SECURITY CHANGE: Using st.text_input with type='password' to mask input
         connection_input = st.text_input(
@@ -214,12 +213,12 @@ if not st.session_state["connection_string"]:
         with col1:
             model_option = st.selectbox( 
                 "Select AI Model",
-                options=["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"],
+                options=["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo", "gemini-1", "gemini-1.5"],
                 index=0,
                 label_visibility="visible"
-        )
+            )
+            st.session_state["selected_model"] = model_option
         with col2:
-            
             # API KEY INPUT 
             api_key_input = st.text_input(
                 "LLM API Key",
@@ -227,7 +226,7 @@ if not st.session_state["connection_string"]:
                 label_visibility="visible",
                 type="password"
             )
-
+            st.session_state["llm_api_key"] = api_key_input
 
         if st.button("Connect", use_container_width=True):
             if connection_input.strip():
@@ -300,9 +299,6 @@ else:
         number = 0
         
         for msg in st.session_state["messages_streamlit"]:
-            # Avatar: Axis (💠) vs User (None)
-            avatar = "💠" if msg["role"] == "assistant" else None
-            
             if msg.get("role") == "assistant":
                 content = msg.get("content", {})
                 if content.get("type") == "chart":
@@ -332,8 +328,8 @@ else:
 
 
         for msg in st.session_state["messages_streamlit"]:
-            # Avatar: Axis (💠) vs User (None)
-            avatar = "💠" if msg["role"] == "assistant" else None
+            # Avatar: Axis (axislogo.png) vs User (None)
+            avatar = "axislogo.png" if msg["role"] == "assistant" else None
             
             if msg.get("role") == "assistant":
                 content = msg.get("content", {})
@@ -380,7 +376,7 @@ else:
         
             # Display assistant response
             msg = response['streamlit']
-            avatar = "💠"
+            avatar = "axislogo.png"  # AXIS logo as avatar
             
             if msg["role"] == "assistant":
                 content = msg["content"]
@@ -403,7 +399,7 @@ else:
                 st.chat_message(msg["role"]).write(msg["content"])
 
 with st.sidebar:
-    st.markdown("### <span style='color:#D4AF37'> About AXIS:</span>", unsafe_allow_html=True)
+    st.markdown("### <span style='color:#D4AF37'> About AXIS</span>", unsafe_allow_html=True)
     st.markdown("""
     Tired of waiting days for reports? Not comfortable writing SQL?
 
@@ -413,13 +409,13 @@ with st.sidebar:
     Connect your database, ask anything, and I’ll instantly generate the SQL, pull the data, and create the charts you need.
     Simply connect your database and start asking questions in natural language. AXIS will generate SQL queries, fetch data, and create insightful charts for you.
     
-    **<span style='color:#D4AF37'>Features:</span>**
+    **<span style='color:#D4AF37'>Features</span>**
     - Natural language querying
     - Automated SQL generation
     - Data visualization with charts
     - Support for multiple SQL dialects
     - 2 modes: Conversation & Dashboard
                 
-    **Copyright &copy; 2025 Derya Er**
+    **Copyright &copy; 2025 [Derya Er](https://www.linkedin.com/in/deryakubraer/)**
     
     """, unsafe_allow_html=True)

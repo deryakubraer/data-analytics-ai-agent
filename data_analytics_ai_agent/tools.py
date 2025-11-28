@@ -2,14 +2,10 @@ from ai.schema import get_connection_string
 import streamlit as st
 import pandas as pd
 from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
 # add plotly for advanced charts if needed
 import plotly.express as px
 import matplotlib.pyplot as plt
 
-
-
-load_dotenv()
 
 # Define the tools
 TOOLS = [

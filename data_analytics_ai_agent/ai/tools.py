@@ -2,14 +2,11 @@ from ai.schema import get_connection_string
 import streamlit as st
 import pandas as pd
 from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
 # add plotly for advanced charts if needed
 import plotly.express as px
 import matplotlib.pyplot as plt
 
 
-
-load_dotenv()
 
 # Define the tools
 TOOLS = [
@@ -83,11 +80,6 @@ def get_data_df(sql_query):
 #  Define a graphic tool for displaying dataframes in Streamlit
 
 def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "", x_col: str = None, y_col: str = None, color_col: str = None) -> dict:
-    import pandas as pd
-    import plotly.express as px
-    from sqlalchemy import create_engine, text
-    from ai.schema import get_connection_string
-
     try:
         connection_string = get_connection_string()
         if not connection_string:

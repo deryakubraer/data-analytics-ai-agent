@@ -1,20 +1,25 @@
 import json
-from dotenv import load_dotenv
 from openai import OpenAI
 from ai.tools import  get_data_df, display_chart
 from ai.tools import TOOLS
-
-
-load_dotenv()
+import streamlit as st
 
 def call_ai(messages_ai):
+    llm_api_key = st.session_state.get("llm_api_key", "")
+    selected_model = st.session_state.get("selected_model", "")
 
     # Initialize the OpenAI client
-    client = OpenAI()
+    # Pick a different API endpoint depending on the selected model
+    if selected_model.startswith("gpt"):
+        client = OpenAI(api_key=llm_api_key)
+    elif selected_model.startswith("gemini"):
+        client = OpenAI(api_key=llm_api_key, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
+    else:
+        raise ValueError(f"Unsupported model: {selected_model}") # Fail fast for unsupported models
 
     # Make a ChatGPT API call with tool calling
     completion = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model=selected_model,
         tools=TOOLS, # here we pass the tools to the LLM
         messages=messages_ai,
     )
