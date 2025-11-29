@@ -37,8 +37,10 @@ def get_schema() -> str:
     schema_output += "TABLE COLUMNS AND THEIR PROPERTIES\n"
     schema_output += "="*50 + "\n"
 
+    table_count = 0
     for table in tables:
-        schema_output += f"\nTable: {table}\n"
+        table_count += 1
+        schema_output += f"\n{table_count}. Table: {table}\n"
         schema_output += "-"*12 + "\n"
 
         # Columns
@@ -76,5 +78,6 @@ def get_schema() -> str:
         except Exception as e:
             schema_output += f"  Could not fetch sample row: {e}\n"
 
+    schema_output += f"\nThere are {table_count} tables\n"
     return schema_output
 
