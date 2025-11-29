@@ -33,6 +33,7 @@ TOOLS = [
             "description": """Display a plotly chart. Supported chart types are line, bar, scatter, and pie. 
             Always provide a concise technical explanation of the chart generated.
             State which columns should be used for X and Y axes, and color.
+            Color column must ALWAYS contain a string, so write SQL to cast it to a string if needed.
             Color can be an empty string if not applicable.
             """,
             "parameters": {
@@ -142,7 +143,9 @@ def display_chart(sql_query: str, chart_type: str = "line", explanation: str = "
                 color_col = df.columns[2]
             else:
                 color_col = None  
- 
+        if color_col and not pd.api.types.is_string_dtype(df[color_col]):
+            df[color_col] = df[color_col].astype(str)
+
 
         if chart_type == "line":
             fig = px.line(df, x=x_col, y=y_col, color=color_col)

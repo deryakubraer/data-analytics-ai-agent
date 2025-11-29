@@ -27,6 +27,9 @@ def get_schema() -> str:
 
     # Initialize output string
     schema_output = ""
+    schema_output += "You are working with a {engine.url.database} database\n"
+    schema_output += "You must always use the correct dialect when writing queries\n\n"
+
     schema_output += "="*50 + "\n"
     schema_output += "TABLES IN DATABASE\n"
     schema_output += "="*50 + "\n"

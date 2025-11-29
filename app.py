@@ -407,7 +407,7 @@ with st.sidebar:
 
     My job is to give you fast, real-time access to your business data.
     Connect your database, ask anything, and I’ll instantly generate the SQL, pull the data, and create the charts you need.
-    Simply connect your database and start asking questions in natural language. AXIS will generate SQL queries, fetch data, and create insightful charts for you.
+    Simply connect your database and start asking questions in natural language. I will generate SQL queries, fetch data, and create insightful charts for you.
     
     **<span style='color:#D4AF37'>Features</span>**
     - Natural language querying
