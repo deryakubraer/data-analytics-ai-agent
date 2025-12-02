@@ -30,6 +30,8 @@ This project relies on a modern data and AI stack:
 *   **SQLAlchemy** (Database connection and SQL execution)
 *   **Pandas** (Data manipulation and DataFrame handling)
 
+For details: [AXIS Presentation](https://docs.google.com/presentation/d/14K9RlKMx-37nnPGPcEGlnpCkKBwGog34kqwImycJChI/edit?usp=sharing)
+
 ---
 
 ## Getting Started
