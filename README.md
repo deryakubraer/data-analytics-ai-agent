@@ -69,8 +69,10 @@ Follow these steps to set up your project locally:
     Upon launch, the application will prompt you to enter your database connection string (e.g., `mysql+pymysql://user:password@localhost:3306/db_name`) to establish the connection.
 
 ## Usage
-A sample session with AXIS!
 
+[Click here for live version.](https://axis-data-intelligence-agent.streamlit.app/)
+
+A sample session with AXIS!
 ![Demo Gif](demo.gif)
 
 ## Roadmap
